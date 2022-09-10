@@ -88,3 +88,8 @@ h1 {
     color: blue;
     font-weight: normal;
 }
+
+.complete {
+    color: green;
+    text-decoration: line-through;
+}
