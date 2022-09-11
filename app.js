@@ -4,8 +4,11 @@
 */
 
 var todoObjectArr = [];
+var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var count = 0;
 var updateId = "";
+var nodes = "";
+var updateButtonExists = false;
 var divTodo = document.getElementById("todo");
 
 /* creating div for Todo Input*/
@@ -42,8 +45,9 @@ daysCompTodo.setAttribute("value", "0");
 
 
 var addButton = document.createElement("button");
-var addButtonText = document.createTextNode("Add to List");
-addButton.setAttribute("onClick", "addObjToArray()")
+var addButtonText = document.createTextNode("Add");
+addButton.setAttribute("class", "add-button");
+addButton.setAttribute("onClick", "addObjToArray()");
 addButton.appendChild(addButtonText);
 
 divInputTodo.appendChild(TodoInputHeading);
@@ -74,6 +78,7 @@ divTodo.appendChild(divListHeadTodo);
 /* creating div for Todo List*/
 
 var divListTodo = document.createElement("div");
+divListTodo.setAttribute("id", "todolist");
 divListTodo.setAttribute("class", "todolist");
 divTodo.appendChild(divListTodo);
 
@@ -93,9 +98,11 @@ function addObjToArray() {
     var todoDescription = document.getElementById("tododesc").value;
     var todoDaysToComp = document.getElementById("tododayscomp").value;
 
+    document.getElementById("tododesc").value = "";
+    document.getElementById("tododayscomp").value = 0;
 
     var curDate = new Date();
-    var itemCreationDate = curDate.getDate() + "-" + (curDate.getMonth() + 1) + "-" + curDate.getFullYear();
+    var itemCreationDate = curDate.getDate() + "-" + months[curDate.getMonth()] + "-" + curDate.getFullYear();
     var itemExpCompDate = "";
 
     if (todoDaysToComp === "" || todoDaysToComp === "0") {
@@ -105,7 +112,7 @@ function addObjToArray() {
     else {
         itemExpCompDate = curDate.setDate(curDate.getDate() + parseInt(todoDaysToComp));
         itemExpCompDate = new Date(itemExpCompDate);
-        itemExpCompDate = itemExpCompDate.getDate() + "-" + (itemExpCompDate.getMonth() + 1) + "-" + itemExpCompDate.getFullYear();
+        itemExpCompDate = itemExpCompDate.getDate() + "-" + months[itemExpCompDate.getMonth()] + "-" + itemExpCompDate.getFullYear();
     }
 
     if (todoDescription === "") {
@@ -117,8 +124,8 @@ function addObjToArray() {
     else {
 
         todoObjectArr.push(new TodoObject(count, todoDescription, todoDaysToComp, 0, itemCreationDate, itemExpCompDate, ""));
-        count++;
         addListItems();
+        count++;
     }
 
 }
@@ -225,66 +232,88 @@ var updateButton = "";
 
 // Edit Todo list item / object from object list array
 function editItem(id) {
+    addButton.disabled = true;
+
+    nodes = document.getElementById("todolist").getElementsByTagName('button');
+    for (var i = 0; i < nodes.length; i++) {
+        nodes[i].disabled = true;
+    }
     console.log("Edit Id: ", id);
+    
     for (var i = 0; i < todoObjectArr.length; i++) {
         if (todoObjectArr[i].id === parseInt(id)) {
             document.getElementById("tododesc").value = todoObjectArr[i].description;
             document.getElementById("tododayscomp").value = todoObjectArr[i].daysToComplete;
             updateId = todoObjectArr[i].id
-
-            updateButton = document.createElement("button");
-            var updateButtonText = document.createTextNode("Update List");
-            updateButton.setAttribute("onClick", "updateItem(updateId, updateButton)")
-            updateButton.appendChild(updateButtonText);
-            divInputTodo.appendChild(updateButton);
+            if(!updateButtonExists) {
+                updateButton = document.createElement("button");
+                var updateButtonText = document.createTextNode("Update");
+                updateButton.setAttribute("class", "update-button");
+                updateButton.setAttribute("onClick", "updateItem(updateId, updateButton, nodes)")
+                updateButton.appendChild(updateButtonText);
+                divInputTodo.appendChild(updateButton);
+                updateButtonExists = true;
+            }
             break;
         }
     }
 }
 
-
-function updateItem(id, updateButtonid) {
-    // for (var i = 0; i < todoObjectArr.length; i++) {
-    todoObjectArr[id].description = document.getElementById("tododesc").value;
-
+// Update Todo list item / object from object list array
+function updateItem(id, updateButtonid, p_Nodes) {
+    console.log("Update Id:", id);
+    var todoDescription = document.getElementById("tododesc").value;
     var todoDaysToComp = document.getElementById("tododayscomp").value;
-    
-    var creationDate = todoObjectArr[id].dateCreated;
-    // console.log("Creation Date", creationDate.slice(creationDate.indexOf("-"),creationDate.lastindexOf("-"))) 
-
-    console.log("Creation Date", creationDate.lastindexOf("-")) 
-
-    creationDate = new Date(creationDate);
-    console.log("Creation Date", creationDate )
-    var itemExpCompDate = "";
-
-    if (todoDaysToComp === "" || todoDaysToComp === "0") {
-        todoDaysToComp = 0;
-        itemExpCompDate = todoObjectArr[id].dateCreated;
+      
+    if (todoDescription === "") {
+        alert("Description cannot be left blank.");
+    }
+    else if (parseInt(todoDaysToComp) < 0) {
+        alert("Days to Complete cannot be negative.");
     }
     else {
-        itemExpCompDate = todoObjectArr[id].dateCreated.setDate(todoObjectArr[id].dateCreated.getDate() + parseInt(todoDaysToComp));
-        itemExpCompDate = new Date(itemExpCompDate);
-        itemExpCompDate = itemExpCompDate.getDate() + "-" + (itemExpCompDate.getMonth() + 1) + "-" + itemExpCompDate.getFullYear();
+        for (var i = 0; i < todoObjectArr.length; i++) {
+            if (todoObjectArr[i].id === parseInt(id)) {
+                todoObjectArr[i].description = todoDescription;
+ 
+                var creationDate = todoObjectArr[i].dateCreated;
+                creationDate = new Date(creationDate);
+                
+                var itemExpCompDate = "";
+            
+                if (todoDaysToComp === "" || todoDaysToComp === "0") {
+                    todoDaysToComp = 0;
+                    itemExpCompDate = todoObjectArr[i].dateCreated;
+                }
+                else {
+                    itemExpCompDate = creationDate.setDate(creationDate.getDate() + parseInt(todoDaysToComp));
+                    itemExpCompDate = new Date(itemExpCompDate);
+                    itemExpCompDate = itemExpCompDate.getDate() + "-" + months[itemExpCompDate.getMonth()] + "-" + itemExpCompDate.getFullYear();
+                }
+            
+                todoObjectArr[i].daysToComplete = todoDaysToComp;
+                todoObjectArr[i].expCompDate = itemExpCompDate;
+            
+                var olliId = "olli" + id;
+                var nodeToEdit = document.getElementById(olliId);
+                    
+                nodeToEdit.lastChild.children[1].innerText = "Description: " + todoDescription;
+                nodeToEdit.lastChild.children[2].innerText = "Days to Complete: " + todoDaysToComp;
+                nodeToEdit.lastChild.children[4].innerText = "Date Completed (Exp.): " + itemExpCompDate;
+            
+                updateButtonid.remove();
+                updateButtonExists = false;
+                addButton.disabled = false;
+               
+                for (var i = 0; i < p_Nodes.length; i++) {
+                    nodes[i].disabled = false;
+                }
+                document.getElementById("tododesc").value = "";
+                document.getElementById("tododayscomp").value = 0;
+            }
+        }
     }
-
-    todoObjectArr[id].daysToComplete = todoDaysToComp;
-    todoObjectArr[id].expCompDate = itemExpCompDate;
-
-    var olliId = "olli" + id;
-    var nodeToEdit = document.getElementById(olliId);
-
-    console.log(nodeToEdit);
-
-    nodeToEdit.lastChild.children[1].innerText = "Description: " + document.getElementById("tododesc").value;
-    nodeToEdit.lastChild.children[2].innerText = "Days to Complete: " + todoDaysToComp;
-    nodeToEdit.lastChild.children[4].innerText = "Date Completed (Exp.): " + itemExpCompDate;
-
-    updateButtonid.remove();
-
 }
-
-
 
 // Delete Todo list item / object from object list array
 function deleteItem(id) {
@@ -310,13 +339,12 @@ function completeItem(id) {
         if (todoObjectArr[i].id === parseInt(id)) {
             todoObjectArr[i].isCompleted = 1;
             var curDate = new Date();
-            var itemCompleteDate = curDate.getDate() + "-" + (curDate.getMonth() + 1) + "-" + curDate.getFullYear();
+            var itemCompleteDate = curDate.getDate() + "-" + months[curDate.getMonth()] + "-" + curDate.getFullYear();
             todoObjectArr[i].actCompDate = itemCompleteDate;
 
             var olliId = "olli" + id;
             var nodeToComplete = document.getElementById(olliId);
 
-            console.log(nodeToComplete);
             nodeToComplete.lastChild.children[5].innerText = "Date Completed (Act.): " + itemCompleteDate;
             nodeToComplete.lastChild.children[6].innerText = "Is Completed: Yes";
 

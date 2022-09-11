@@ -33,7 +33,7 @@ body {
     margin-bottom: 10px;
     margin-left: 20px;
     height: 30px;
-    width: 460px;
+    width: 490px;
     font-size: x-large;
 }
 
@@ -41,14 +41,21 @@ body {
     margin-bottom: 10px;
     margin-left: 20px;
     height: 30px;
-    width: 155px;
+    width: 160px;
     font-size: x-large;
 }
 
-button {
+.add-button {
     margin-bottom: 20px;
-    margin-left: 25px;
-    width: 160px;
+    margin-left: 15px;
+    width: 80px;
+    font-size: x-large;
+}
+
+.update-button {
+    margin-bottom: 20px;
+    margin-left: 15px;
+    width: 100px;
     font-size: x-large;
 }
 
@@ -90,6 +97,6 @@ h1 {
 }
 
 .complete {
-    color: green;
+    color:fuchsia;
     text-decoration: line-through;
 }
