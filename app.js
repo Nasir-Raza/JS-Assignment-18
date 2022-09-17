@@ -74,7 +74,6 @@ TodoListHeading.appendChild(TodoListHeadingText);
 divListHeadTodo.appendChild(TodoListHeading);
 divTodo.appendChild(divListHeadTodo);
 
-
 /* creating div for Todo List*/
 
 var divListTodo = document.createElement("div");
@@ -84,7 +83,7 @@ divTodo.appendChild(divListTodo);
 
 /* creating constructor for Todo List*/
 
-function TodoObject(id, description, daysToComplete, isCompleted, dateCreated, expCompDate, actCompDate) {
+function TodoObject(id, description, daysToComplete, isCompleted, dateCreated, expCompDate, actCompDate, userId) {
     this.id = id;
     this.description = description;
     this.daysToComplete = daysToComplete;
@@ -92,6 +91,7 @@ function TodoObject(id, description, daysToComplete, isCompleted, dateCreated, e
     this.dateCreated = dateCreated;
     this.expCompDate = expCompDate;
     this.actCompDate = actCompDate;
+    this.userId = userId;
 }
 
 function addObjToArray() {
@@ -122,8 +122,14 @@ function addObjToArray() {
         alert("Days to Complete cannot be negative.");
     }
     else {
+        
+        /* Currently logged in user id */
+        var todoUserId = window.localStorage.getItem("userId");
+        
+        todoObjectArr.push(new TodoObject(count, todoDescription, todoDaysToComp, 0, itemCreationDate, itemExpCompDate, "", todoUserId));
 
-        todoObjectArr.push(new TodoObject(count, todoDescription, todoDaysToComp, 0, itemCreationDate, itemExpCompDate, ""));
+         //Saving todo objects to local storage 
+         window.localStorage.setItem("todoObjects", JSON.stringify(todoObjectArr));
         addListItems();
         count++;
     }
@@ -139,8 +145,6 @@ function addListItems() {
     console.log(todoObjectArr.length)
     // todoOrderList.innerHTML = "";
     for (var key in todoObjectArr) {
-        // for (var key = 0; key < todoObjectArr.length; key++) {
-        // todoOrderList.innerHTML = "";
         console.log("key", key)
         var todoOrderListItem = document.createElement("li")
         var todoOrderListItemText = document.createTextNode("Item " + (parseInt(todoObjectArr[key].id) + 1));
@@ -294,6 +298,9 @@ function updateItem(id, updateButtonid, p_Nodes) {
                 todoObjectArr[i].daysToComplete = todoDaysToComp;
                 todoObjectArr[i].expCompDate = itemExpCompDate;
             
+                //Saving todo objects to local storage 
+                window.localStorage.setItem("todoObjects", JSON.stringify(todoObjectArr));
+                
                 var olliId = "olli" + id;
                 var nodeToEdit = document.getElementById(olliId);
                     
@@ -327,6 +334,8 @@ function deleteItem(id) {
     for (var i = 0; i < todoObjectArr.length; i++) {
         if (todoObjectArr[i].id === parseInt(id)) {
             todoObjectArr.splice(i, 1);
+            //Saving todo objects to local storage 
+            window.localStorage.setItem("todoObjects", JSON.stringify(todoObjectArr));
             break;
         }
     }
@@ -354,8 +363,36 @@ function completeItem(id) {
             nodeToComplete.firstChild.nextSibling.remove();
             nodeToComplete.firstChild.nextSibling.remove();
             nodeToComplete.firstChild.nextSibling.remove();
+
+            //Saving todo objects to local storage 
+            window.localStorage.setItem("todoObjects", JSON.stringify(todoObjectArr));
             break;
         }
     }
 }
 
+function getTodoObjectsData() {
+    //Get currently logged in user id
+    var currentloggedInUserId = window.localStorage.getItem("userId");
+
+    //Getting todo objects data form local storage 
+    var localStorageTodoobj = window.localStorage.getItem("todoObjects");
+    localStorageTodoobj = JSON.parse(localStorageTodoobj);
+
+    for (var key in localStorageTodoobj) {
+        if (localStorageTodoobj[key].userId === currentloggedInUserId) {
+            todoObjectArr.push(localStorageTodoobj[key]);
+            addListItems();
+            if (localStorageTodoobj[key].isCompleted === 1) {
+                var olliId = "olli" + localStorageTodoobj[key].id;
+                var nodeToComplete = document.getElementById(olliId);
+                nodeToComplete.lastChild.setAttribute("class", "ulist complete");
+    
+                nodeToComplete.firstChild.nodeValue += " (Completed)";
+                nodeToComplete.firstChild.nextSibling.remove();
+                nodeToComplete.firstChild.nextSibling.remove();
+                nodeToComplete.firstChild.nextSibling.remove();
+            }
+        }
+    }
+}

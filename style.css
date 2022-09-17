@@ -33,7 +33,7 @@ body {
     margin-bottom: 10px;
     margin-left: 20px;
     height: 30px;
-    width: 490px;
+    width: 68%;
     font-size: x-large;
 }
 
@@ -41,21 +41,21 @@ body {
     margin-bottom: 10px;
     margin-left: 20px;
     height: 30px;
-    width: 160px;
+    width: 25%;
     font-size: x-large;
 }
 
 .add-button {
     margin-bottom: 20px;
     margin-left: 15px;
-    width: 80px;
+    width: 12%;
     font-size: x-large;
 }
 
 .update-button {
     margin-bottom: 20px;
     margin-left: 15px;
-    width: 100px;
+    width: 15%;
     font-size: x-large;
 }
 
@@ -99,4 +99,63 @@ h1 {
 .complete {
     color:fuchsia;
     text-decoration: line-through;
+}
+
+/* Add media query to adjust "page content" */
+@media screen and (max-width: 800px) {
+    .todoinput {
+        margin-left: 2%;
+        width: 85%;
+    }
+
+    .todolist {
+        margin-top: 5px;
+        margin-left: 2%;
+        border: 2px solid green;
+        width: 85%;
+    }
+    label {
+        margin-top: 20px;
+        margin-left: 10px;
+        font-size: large;
+    }
+
+    .inputdesc {
+        margin-left: 10px;
+        width: 90%;
+        font-size: large;
+    }
+    
+    .inputdays {
+        
+        margin-left: 10px;
+        width: 22%;
+        font-size: large;
+    }
+    
+    .add-button {
+        margin-bottom: 20px;
+        margin-left: 10px;
+        width: 25%;
+        font-size: large;
+    }
+    
+    .update-button {
+        margin-bottom: 20px;
+        margin-left: 10px;
+        width: 40%;
+        font-size: large;
+    }
+
+    .olist {
+        margin: 10px;
+        font-size: xx-large;
+        font-weight:bold;
+    }
+    
+    .ulist {
+        margin: 2px;
+        font-size: x-large;
+         font-weight: normal;
+    }
 }
